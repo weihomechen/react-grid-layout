@@ -5,6 +5,12 @@
 [![npm package](https://img.shields.io/npm/v/react-grid-layout.svg?style=flat-square)](https://www.npmjs.org/package/react-grid-layout)
 [![npm downloads](https://img.shields.io/npm/dt/react-grid-layout.svg?maxAge=2592000)]()
 
+# 有何不同
+
+使用嵌套布局时，布局A里嵌套子布局B，拖动子布局B里的item，子布局也会被拖动，发现`ReactGridLayout`里的`onDragStart`加上` e.stopPropagation()`可临时解决，于是fork后自己打了个补丁，发了自己的npm包
+
+这个属于临时解决方案，不清楚是否有其他风险，等待官方更新
+
 React-Grid-Layout is a grid layout system much like [Packery](http://packery.metafizzy.co/) or
 [Gridster](http://dsmorse.github.io/gridster.js/), for React.
 
@@ -20,19 +26,24 @@ RGL is React-only and does not require jQuery.
 
 ## Table of Contents
 
-- [Demos](#demos)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Responsive Usage](#responsive-usage)
-- [Providing Grid Width](#providing-grid-width)
-- [Grid Layout Props](#grid-layout-props)
-- [Responsive Grid Layout Props](#responsive-grid-layout-props)
-- [Grid Item Props](#grid-item-props)
-- [User Recipes](../../wiki/Users-recipes)
-- [Performance](#performance)
-- [Contribute](#contribute)
-- [TODO List](#todo-list)
+- [React-Grid-Layout](#react-grid-layout)
+- [有何不同](#有何不同)
+  - [Table of Contents](#table-of-contents)
+  - [Demos](#demos)
+      - [Projects Using React-Grid-Layout](#projects-using-react-grid-layout)
+  - [Features](#features)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Usage without Browserify/Webpack](#usage-without-browserifywebpack)
+    - [Responsive Usage](#responsive-usage)
+    - [Providing Grid Width](#providing-grid-width)
+    - [Grid Layout Props](#grid-layout-props)
+    - [Responsive Grid Layout Props](#responsive-grid-layout-props)
+    - [Grid Item Props](#grid-item-props)
+    - [Performance](#performance)
+    - [Custom Child Components and Draggable Handles](#custom-child-components-and-draggable-handles)
+  - [Contribute](#contribute)
+  - [TODO List](#todo-list)
 
 ## Demos
 
@@ -94,13 +105,13 @@ RGL is React-only and does not require jQuery.
   * Performance with CSS Transforms: [on](http://i.imgur.com/FTogpLp.jpg) / [off](http://i.imgur.com/gOveMm8.jpg), note paint (green) as % of time
 * Compatibility with `<React.StrictMode>`
 
-|Version         | Compatibility    |
-|----------------|------------------|
-| >= 0.17.0      | React 16 & 17    |
-| >= 0.11.3      | React 0.14 & 15  |
-| >= 0.10.0      | React 0.14       |
-| 0.8. - 0.9.2   | React 0.13       |
-| < 0.8          | React 0.12       |
+| Version      | Compatibility   |
+| ------------ | --------------- |
+| >= 0.17.0    | React 16 & 17   |
+| >= 0.11.3    | React 0.14 & 15 |
+| >= 0.10.0    | React 0.14      |
+| 0.8. - 0.9.2 | React 0.13      |
+| < 0.8        | React 0.12      |
 
 ## Installation
 

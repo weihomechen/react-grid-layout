@@ -247,6 +247,9 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     { e, node }: GridDragEvent
   ) => {
     const { layout } = this.state;
+    //TODO：补丁，等待官方更新
+    e.stopPropagation();
+
     const l = getLayoutItem(layout, i);
     if (!l) return;
 
@@ -696,84 +699,86 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     }
   };
 
-  removeDroppingPlaceholder: () => void = () => {
-    const { droppingItem, cols } = this.props;
-    const { layout } = this.state;
+removeDroppingPlaceholder: () => void = () => {
+  const { droppingItem, cols } = this.props;
+  const { layout } = this.state;
 
-    const newLayout = compact(
-      layout.filter(l => l.i !== droppingItem.i),
-      compactType(this.props),
-      cols
-    );
+  const newLayout = compact(
+    layout.filter(l => l.i !== droppingItem.i),
+    compactType(this.props),
+    cols
+  );
 
-    this.setState({
-      layout: newLayout,
-      droppingDOMNode: null,
-      activeDrag: null,
-      droppingPosition: undefined
-    });
-  };
+  this.setState({
+    layout: newLayout,
+    droppingDOMNode: null,
+    activeDrag: null,
+    droppingPosition: undefined
+  });
+};
 
-  onDragLeave: EventHandler = e => {
-    e.preventDefault(); // Prevent any browser native action
-    this.dragEnterCounter--;
+onDragLeave: EventHandler = e => {
+  e.preventDefault(); // Prevent any browser native action
+  this.dragEnterCounter--;
 
-    // onDragLeave can be triggered on each layout's child.
-    // But we know that count of dragEnter and dragLeave events
-    // will be balanced after leaving the layout's container
-    // so we can increase and decrease count of dragEnter and
-    // when it'll be equal to 0 we'll remove the placeholder
-    if (this.dragEnterCounter === 0) {
-      this.removeDroppingPlaceholder();
-    }
-  };
-
-  onDragEnter: EventHandler = e => {
-    e.preventDefault(); // Prevent any browser native action
-    this.dragEnterCounter++;
-  };
-
-  onDrop: EventHandler = (e: Event) => {
-    e.preventDefault(); // Prevent any browser native action
-    const { droppingItem } = this.props;
-    const { layout } = this.state;
-    const item = layout.find(l => l.i === droppingItem.i);
-
-    // reset dragEnter counter on drop
-    this.dragEnterCounter = 0;
-
+  // onDragLeave can be triggered on each layout's child.
+  // But we know that count of dragEnter and dragLeave events
+  // will be balanced after leaving the layout's container
+  // so we can increase and decrease count of dragEnter and
+  // when it'll be equal to 0 we'll remove the placeholder
+  if (this.dragEnterCounter === 0) {
     this.removeDroppingPlaceholder();
+  }
+};
 
-    this.props.onDrop(layout, item, e);
+onDragEnter: EventHandler = e => {
+  e.preventDefault(); // Prevent any browser native action
+  this.dragEnterCounter++;
+};
+
+onDrop: EventHandler = (e: Event) => {
+  e.preventDefault(); // Prevent any browser native action
+  const { droppingItem } = this.props;
+  const { layout } = this.state;
+  const item = layout.find(l => l.i === droppingItem.i);
+
+  // reset dragEnter counter on drop
+  this.dragEnterCounter = 0;
+
+  this.removeDroppingPlaceholder();
+
+  this.props.onDrop(layout, item, e);
+};
+
+render(): React.Element < "div" > {
+  const { className, style, isDroppable, innerRef } = this.props;
+
+  const mergedClassName = classNames(layoutClassName, className);
+  const mergedStyle = {
+    height: this.containerHeight(),
+    ...style
   };
 
-  render(): React.Element<"div"> {
-    const { className, style, isDroppable, innerRef } = this.props;
-
-    const mergedClassName = classNames(layoutClassName, className);
-    const mergedStyle = {
-      height: this.containerHeight(),
-      ...style
-    };
-
-    return (
+  return(
       <div
-        ref={innerRef}
-        className={mergedClassName}
-        style={mergedStyle}
-        onDrop={isDroppable ? this.onDrop : noop}
-        onDragLeave={isDroppable ? this.onDragLeave : noop}
-        onDragEnter={isDroppable ? this.onDragEnter : noop}
-        onDragOver={isDroppable ? this.onDragOver : noop}
+        ref = { innerRef }
+        className = { mergedClassName }
+        style = { mergedStyle }
+        onDrop = { isDroppable? this.onDrop : noop }
+        onDragLeave = { isDroppable? this.onDragLeave : noop }
+        onDragEnter = { isDroppable? this.onDragEnter : noop }
+        onDragOver = { isDroppable? this.onDragOver : noop }
       >
-        {React.Children.map(this.props.children, child =>
-          this.processGridItem(child)
-        )}
-        {isDroppable &&
-          this.state.droppingDOMNode &&
-          this.processGridItem(this.state.droppingDOMNode, true)}
-        {this.placeholder()}
-      </div>
+    {
+      React.Children.map(this.props.children, child =>
+        this.processGridItem(child)
+      )
+    }
+        { isDroppable &&
+  this.state.droppingDOMNode &&
+  this.processGridItem(this.state.droppingDOMNode, true)}
+{ this.placeholder() }
+      </div >
     );
   }
 }
